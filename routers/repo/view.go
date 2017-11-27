@@ -135,11 +135,12 @@ func renderFile(ctx *context.Context, entry *git.TreeEntry, treeLink, rawLink st
 	ctx.Data["IsViewFile"] = true
 
 	blob := entry.Blob()
-	dataRc, err := blob.Data()
+	dataRc, err := blob.DataAsync()
 	if err != nil {
-		ctx.Handle(500, "Data", err)
+		ctx.Handle(500, "DataAsync", err)
 		return
 	}
+	defer dataRc.Close()
 
 	ctx.Data["FileSize"] = blob.Size()
 	ctx.Data["FileName"] = blob.Name()

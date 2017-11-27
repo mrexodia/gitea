@@ -45,12 +45,12 @@ func ServeData(ctx *context.Context, name string, reader io.Reader) error {
 
 // ServeBlob download a git.Blob
 func ServeBlob(ctx *context.Context, blob *git.Blob) error {
-	dataRc, err := blob.Data()
+	stdout, err := blob.DataAsync()
 	if err != nil {
 		return err
 	}
-
-	return ServeData(ctx, ctx.Repo.TreePath, dataRc)
+	defer stdout.Close()
+	return ServeData(ctx, ctx.Repo.TreePath, stdout)
 }
 
 // SingleDownload download a file by repos path
