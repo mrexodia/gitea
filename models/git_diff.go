@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"code.gitea.io/git"
 	"code.gitea.io/gitea/modules/base"
@@ -231,10 +232,17 @@ func (diff *Diff) NumFiles() int {
 
 const cmdDiffHead = "diff --git "
 
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	fmt.Printf("%s took %s\n", name, elapsed)
+}
+
 // ParsePatch builds a Diff object from a io.Reader and some
 // parameters.
 // TODO: move this function to gogits/git-module
 func ParsePatch(maxLines, maxLineCharacters, maxFiles int, reader io.Reader) (*Diff, error) {
+	start := time.Now()
+	defer timeTrack(start, "ParsePatch")
 	var (
 		diff = &Diff{Files: make([]*DiffFile, 0)}
 
